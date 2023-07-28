@@ -1,26 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEtherBalance, useEthers } from "@usedapp/core";
+import { formatEther } from "@ethersproject/units";
+import { ConnectButton } from "./components/connectbutton";
+import config from "./index";
 
-function App() {
+const App = () => {
+  const { account, chainId } = useEthers();
+  const etherBalance = useEtherBalance(account);
+  if (chainId && config.readOnlyUrls && !config.readOnlyUrls[chainId]) {
+    return <p>Please use either Mainnet or Goerli testnet.</p>;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ConnectButton />
+      {etherBalance && (
+        <div className="balance">
+          <br />
+          Address:
+          <p className="bold">{account}</p>
+          <br />
+          Balance:
+          <p className="bold">{formatEther(etherBalance)}</p>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default App;
